@@ -1,0 +1,355 @@
+{
+  "info": {
+    "name": "Healthcare Backend API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000"
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "refresh_token",
+      "value": ""
+    },
+    {
+      "key": "patient_id",
+      "value": "1"
+    },
+    {
+      "key": "doctor_id",
+      "value": "1"
+    },
+    {
+      "key": "mapping_id",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/auth/register/"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Alex Patient\",\n  \"email\": \"alex@example.com\",\n  \"password\": \"StrongPassword123!\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "description": "Expected HTTP 201"
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/auth/login/"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"alex@example.com\",\n  \"password\": \"StrongPassword123!\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "description": "Expected HTTP 200",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Login succeeded\", () => pm.response.to.have.status(200));",
+              "if (pm.response.code === 200) { pm.collectionVariables.set(\"access_token\", pm.response.json().access); pm.collectionVariables.set(\"refresh_token\", pm.response.json().refresh); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Refresh token",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/auth/token/refresh/"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "description": "Expected HTTP 200"
+    },
+    {
+      "name": "Create patient",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/patients/"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Jamie Doe\",\n  \"date_of_birth\": \"1990-01-01\",\n  \"gender\": \"other\",\n  \"email\": \"jamie@example.com\",\n  \"phone\": \"555-0100\",\n  \"address\": \"Example address\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "description": "Expected HTTP 201"
+    },
+    {
+      "name": "List patients",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/patients/"
+        }
+      },
+      "description": "Expected HTTP 200"
+    },
+    {
+      "name": "Get patient",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/patients/{{patient_id}}/"
+        }
+      },
+      "description": "Expected HTTP 200"
+    },
+    {
+      "name": "Update patient",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/patients/{{patient_id}}/"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Jamie Doe\",\n  \"date_of_birth\": \"1990-01-01\",\n  \"gender\": \"other\",\n  \"email\": \"jamie@example.com\",\n  \"phone\": \"555-0100\",\n  \"address\": \"Updated address\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "description": "Expected HTTP 200"
+    },
+    {
+      "name": "Delete patient",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/patients/{{patient_id}}/"
+        }
+      },
+      "description": "Expected HTTP 204"
+    },
+    {
+      "name": "Create doctor",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/doctors/"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Dr Casey\",\n  \"specialization\": \"Cardiology\",\n  \"email\": \"casey@example.com\",\n  \"phone\": \"555-0101\",\n  \"address\": \"Clinic\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "description": "Expected HTTP 201"
+    },
+    {
+      "name": "List doctors",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/doctors/"
+        }
+      },
+      "description": "Expected HTTP 200"
+    },
+    {
+      "name": "Get doctor",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/doctors/{{doctor_id}}/"
+        }
+      },
+      "description": "Expected HTTP 200"
+    },
+    {
+      "name": "Update doctor",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/doctors/{{doctor_id}}/"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Dr Casey\",\n  \"specialization\": \"Cardiology\",\n  \"email\": \"casey@example.com\",\n  \"phone\": \"555-0101\",\n  \"address\": \"Updated clinic\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "description": "Expected HTTP 200"
+    },
+    {
+      "name": "Delete doctor",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/doctors/{{doctor_id}}/"
+        }
+      },
+      "description": "Expected HTTP 204"
+    },
+    {
+      "name": "Create mapping",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/mappings/"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"patient\": \"{{patient_id}}\",\n  \"doctor\": \"{{doctor_id}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "description": "Expected HTTP 201"
+    },
+    {
+      "name": "List mappings",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/mappings/"
+        }
+      },
+      "description": "Expected HTTP 200"
+    },
+    {
+      "name": "List patient mappings",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/mappings/{{patient_id}}/"
+        }
+      },
+      "description": "Expected HTTP 200"
+    },
+    {
+      "name": "Delete mapping",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/mappings/{{mapping_id}}/"
+        }
+      },
+      "description": "Expected HTTP 204"
+    }
+  ]
+}
